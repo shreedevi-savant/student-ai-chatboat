@@ -23,4 +23,22 @@ if api_key:
 
     # Accept user input
     if prompt := st.chat_input("Type your question here..."):
-        st.sessi…
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # Generate response using Gemini
+        with st.chat_message("assistant"):
+            try:
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash',
+                    contents=prompt,
+                )
+                answer = response.text
+                st.markdown(answer)
+                st.session_state.messages.append({"role": "assistant", "content": answer})
+            except Exception as e:
+                st.error(f"Error: {e}")
+else:
+    st.info("Please enter your Google Gemini API Key to continue.")
+
