@@ -14,7 +14,7 @@ if api_key:
     genai.configure(api_key=api_key)
     
     # Using gemini-1.5-flash for faster responses and lower error rates
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-2.5-flash')
 
     # User Input
     user_question = st.text_input("Type your question here...")
