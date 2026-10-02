@@ -14,7 +14,7 @@ if user_question:
     else:
         try:
             genai.configure(api_key=api_key.strip())
-            model = genai.GenerativeModel('gemini-1.5-flash-8b')
+            model = genai.GenerativeModel('gemini-1.5-flash')
             
             with st.spinner("Generating answer..."):
                 response = model.generate_content(user_question)
