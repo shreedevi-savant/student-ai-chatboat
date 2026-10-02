@@ -1,46 +1,32 @@
 import streamlit as st
-from google import genai
+import google.generativeai as genai
 
+# App Layout
 st.set_page_config(page_title="Student AI Chatbot", page_icon="🎓")
-
 st.title("🎓 Student AI Chatbot")
-st.write("Ask any questions related to your studies and learning here!")
+st.caption("Ask any questions related to your studies and learning here!")
 
-# API Key input
+# API Key Input
 api_key = st.text_input("Enter your Google Gemini API key:", type="password")
 
 if api_key:
-    try:
-        client = genai.Client(api_key=api_key)
-        
-        # Initialize chat history
-        if "messages" not in st.session_state:
-            st.session_state.messages = []
+    # Configure Gemini API
+    genai.configure(api_key=api_key)
+    
+    # Using gemini-1.5-flash for faster responses and lower error rates
+    model = genai.GenerativeModel('gemini-1.5-flash')
 
-        # Display prior chat messages
-        for message in st.session_state.messages:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
+    # User Input
+    user_question = st.text_input("Type your question here...")
 
-        # Accept user input
-        if prompt := st.chat_input("Type your question here..."):
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            with st.chat_message("user"):
-                st.markdown(prompt)
-
-            # Generate response using Gemini
-            with st.chat_message("assistant"):
-                try:
-                    response = client.models.generate_content(
-                        model='gemini-3.5-flash',
-                        contents=prompt,
-                    )
-                    answer = response.text
-                    st.markdown(answer)
-                    st.session_state.messages.append({"role": "assistant", "content": answer})
-                except Exception as e:
-                    st.error(f"Error generating content: {e}")
-    except Exception as e:
-        st.error(f"Error initializing client: {e}")
+    if user_question:
+        try:
+            with st.spinner("Generating answer..."):
+                response = model.generate_content(user_question)
+                st.markdown("### Answer:")
+                st.write(response.text)
+        except Exception as e:
+            # Clean error handling to prevent app crashes on 503 or quota limits
+            st.error("⚠️ The server is currently busy or the quota limit was reached. Please wait 10–15 seconds and try again.")
 else:
-    st.info("Please enter your Google Gemini API Key to continue.")
+    st.info("Please enter your Gemini API key above to start asking questions.")
