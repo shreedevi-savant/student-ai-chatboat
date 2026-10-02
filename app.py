@@ -21,7 +21,7 @@ if user_question:
             genai.configure(api_key=api_key.strip())
             
             # Using the stable fast model
-            model = genai.GenerativeModel('gemini-2.5-flash')
+            model = genai.GenerativeModel('gemini-1.5-flash-8b')
             
             with st.spinner("Generating answer..."):
                 response = model.generate_content(user_question)
